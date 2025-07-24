@@ -102,6 +102,15 @@ json
 
 ## 5.0 Database Design
 ### 5.1 ERD diagram
+The ERD below represents the core structure of the tuition management system's database. It includes four main entities:
+
+- *User*: Stores all users of the system (students and tutors). The role field distinguishes their function, either STUDENT or TUTOR.
+- *Class Entity*: Represents a tuition class, including its subject, schedule and the tutor assigned to each class.
+- *Class Entity Student IDs*: A bridge table that links students to the classes they are enrolled in, enabling a many-to-many relationship.
+- *Payment*: Records all payment transactions made by students for tuition classes.
+
+
+The diagram helps visualize how users, classes and payments are related, ensuring the system is well-structured, relational, and scalable.
 <img width="1594" height="993" alt="image" src="https://github.com/user-attachments/assets/b58143b9-b452-4e9b-bd82-4c205befa516" />
 
 
