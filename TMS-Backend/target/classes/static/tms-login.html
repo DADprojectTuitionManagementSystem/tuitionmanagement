@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tuition Management System – Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* ===== GLOBAL RESET ===== */
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body{
+            height:100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display:flex;
+            align-items:center;
+            justify-content:center;
+        }
+
+        /* ===== CARD ===== */
+        .login-card{
+            width:100%;
+            max-width:400px;
+            background:#fff;
+            border-radius:12px;
+            padding:40px 30px;
+            box-shadow:0 15px 30px rgba(0,0,0,.25);
+        }
+        .login-card h2{
+            text-align:center;
+            margin-bottom:30px;
+            color:#333;
+        }
+
+        /* ===== FORM ===== */
+        .input-group{
+            margin-bottom:20px;
+        }
+        .input-group label{
+            display:block;
+            margin-bottom:6px;
+            font-size:14px;
+            color:#555;
+        }
+        .input-group input, .input-group select{
+            width:100%;
+            padding:12px 15px;
+            border:1px solid #bbb;
+            border-radius:6px;
+            font-size:16px;
+            transition:border .3s;
+        }
+        .input-group input:focus, .input-group select:focus{
+            outline:none;
+            border-color:#667eea;
+        }
+
+        /* ===== BUTTON ===== */
+        .login-btn{
+            width:100%;
+            padding:12px;
+            background:#667eea;
+            color:#fff;
+            border:none;
+            border-radius:6px;
+            font-size:16px;
+            cursor:pointer;
+            transition:background .3s;
+        }
+        .login-btn:hover{
+            background:#5a67d8;
+        }
+
+        /* ===== ERROR MESSAGE ===== */
+        .error-msg{
+            color:#e53e3e;
+            font-size:14px;
+            text-align:center;
+            margin-top:10px;
+            display:none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        <!-- Role selector -->
+        <div class="input-group">
+            <label for="roleSelect"><Strong>Login as</Strong></label>
+            <select id="roleSelect">
+                <option value="student" selected>Student</option>
+                <option value="tutor">Tutor</option>
+            </select>
+        </div>
+
+        <h2>Tuition Management System</h2>
+
+        <form id="loginForm">
+            <div class="input-group">
+                <label for="username"><Strong>Username</Strong></label>
+                <input type="text" id="username" placeholder="Enter username" required>
+            </div>
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="Enter password" required>
+            </div>
+            <button type="submit" class="login-btn">Login</button>
+            <div class="error-msg" id="errorMsg">Invalid credentials, please try again.</div>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById("loginForm").addEventListener("submit", async function(e){
+    e.preventDefault();
+    const role = document.getElementById("roleSelect").value;
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value.trim();
+    const errorMsg = document.getElementById("errorMsg");
+
+    try {
+        const res = await fetch("http://localhost:8080/api/auth/login", {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password, role })
+        });
+        if (res.ok) {
+            const user = await res.json();
+            // Save to session
+            sessionStorage.setItem("userId", user.id);
+            sessionStorage.setItem("role", user.role);
+            sessionStorage.setItem("username", user.username);
+            // Redirect based on role
+            if(user.role === "STUDENT") window.location.href = "tms-student-dashboard.html";
+            else window.location.href = "tms-tutor-dashboard.html";
+        } else {
+            errorMsg.style.display = "block";
+        }
+    } catch (err) {
+        console.error(err);
+        errorMsg.style.display = "block";
+    }
+});
+
+    </script>
+</body>
+</html>

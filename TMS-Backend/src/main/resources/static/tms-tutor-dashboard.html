@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tuition Management</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* ========= RESET ========= */
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body{
+            display:flex;
+            height:100vh;
+            overflow:hidden;
+        }
+
+        /* ========= SIDEBAR ========= */
+        .sidebar{
+            width:220px;
+            background:#a78bfa;              /* light purple */
+            display:flex;
+            flex-direction:column;
+            padding:25px 0;
+            box-shadow:2px 0 5px rgba(0,0,0,.1);
+            position: relative; /* Added for logout button positioning */
+        }
+        .sidebar h3{
+            color:#fff;
+            text-align:center;
+            margin-bottom:30px;
+            font-size:18px;
+        }
+        .sidebar button{
+            background:transparent;
+            border:none;
+            color:#fff;
+            padding:15px 25px;
+            width:100%;
+            text-align:left;
+            cursor:pointer;
+            font-size:15px;
+            transition:background .2s;
+            border-left:4px solid transparent;
+        }
+        .sidebar button.active,
+        .sidebar button:hover{
+            background:#8b5cf6;
+            border-left:4px solid #fff;
+        }
+        .logout-btn {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            padding: 15px 25px;
+            color: #fff;
+            cursor: pointer;
+            transition: background .2s;
+        }
+        .logout-btn:hover {
+            background: #8b5cf6;
+        }
+        .logout-btn i {
+            margin-right: 10px;
+        }
+
+        /* ========= MAIN CONTENT ========= */
+        .main-content{
+            flex:1;
+            padding:40px;
+            background:#fff;
+            overflow-y:auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .page{
+            display:none;
+            width: 100%;
+            max-width: 1200px;
+        }
+        .page.active{
+            display:block;
+        }
+        .page h2{
+            margin-bottom:20px;
+            color:#333;
+            text-align: center;
+        }
+
+        /* Table styling */
+        .adjustment-table, .student-table {
+            width:100%;
+            border-collapse:collapse;
+            font-size:14px;
+            margin: 0 auto;
+        }
+        .adjustment-table th,
+        .adjustment-table td,
+        .student-table th,
+        .student-table td {
+            padding:12px 14px;
+            text-align:left;
+            border-bottom:1px solid #e5e7eb;
+        }
+        .adjustment-table th,
+        .student-table th {
+            background:#f9fafb;
+            color:#4b5563;
+            font-weight:600;
+        }
+
+        /* Status badges */
+        .status{
+            padding:4px 8px;
+            border-radius:12px;
+            font-size:12px;
+            font-weight:600;
+            display: inline-block;
+            min-width: 80px;
+            text-align: center;
+        }
+        .status.completed { background:#d1fae5; color:#065f46; }
+        .status.scheduled { background:#dbeafe; color:#1e40af; }
+        .status.canceled { background:#fee2e2; color:#991b1b; }
+        .status.paid { background:#d1fae5; color:#065f46; }
+        .status.pending { background:#fef3c7; color:#92400e; }
+        .status.overdue { background:#fee2e2; color:#991b1b; }
+
+        /* Primary button */
+        .btn-primary{
+            background:#8b5cf6;
+            color:#fff;
+            border:none;
+            padding:10px 20px;
+            border-radius:4px;
+            font-size:14px;
+            cursor:pointer;
+            transition:background .2s;
+            display: block;
+            margin: 20px auto 0;
+        }
+        .btn-primary:hover{
+            background:#7c3aed;
+        }
+
+        /* Edit button */
+        .btn-edit{
+            background:transparent;
+            color:#8b5cf6;
+            border:1px solid #8b5cf6;
+            padding:6px 12px;
+            border-radius:4px;
+            font-size:13px;
+            cursor:pointer;
+            transition:all .2s;
+        }
+        .btn-edit:hover{
+            background:#8b5cf6;
+            color:#fff;
+        }
+
+        /* Student count display */
+        .student-count {
+            color: #4b5563;
+            font-weight: 500;
+        }
+
+        /* Search and filter */
+        .student-controls {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+        .search-box {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 300px;
+        }
+        .filter-select {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            width: 800px;
+            max-width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        .modal-header h3 {
+            margin: 0;
+            color: #333;
+            font-size: 24px;
+        }
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #666;
+        }
+        .modal-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 25px;
+            font-size: 16px;
+        }
+        .modal-table th, 
+        .modal-table td {
+            padding: 16px;
+            border-bottom: 1px solid #eee;
+            text-align: left;
+        }
+        .modal-table th {
+            background: #f9fafb;
+            color: #4b5563;
+            font-weight: 600;
+            font-size: 17px;
+        }
+        .modal-table select, 
+        .modal-table input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 15px;
+        }
+        .time-inputs {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .time-inputs span {
+            font-weight: 500;
+        }
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .btn-save {
+            background: #8b5cf6;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.2s;
+        }
+        .btn-save:hover {
+            background: #7c3aed;
+        }
+        .btn-cancel {
+            background: #f3f4f6;
+            color: #4b5563;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.2s;
+        }
+        .btn-cancel:hover {
+            background: #e5e7eb;
+        }
+    </style>
+    <!-- Font Awesome for logout icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar">
+        <h3>Tutor Menu</h3>
+
+        <button class="nav-btn" data-target="class">Class</button>
+        <button class="nav-btn" data-target="listOfStudents">List of Students</button>
+        
+        <!-- Logout Button -->
+        <div class="logout-btn" id="logoutBtn">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Logout</span>
+        </div>
+    </aside>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="main-content">
+        <!-- 2) Class -->
+        <section id="class" class="page">
+            <h2>Class</h2>
+
+            <!-- Responsive wrapper -->
+            <div style="overflow-x:auto;">
+                <table class="adjustment-table">
+                    <thead>
+                        <tr>
+                            <th>Subject</th>
+                            <th>Day</th>
+                            <th>Time</th>
+                            <th>Status</th>
+                            <th>Student</th>
+                            <th>Edit Class</th>
+                        </tr>
+                    </thead>
+
+                    <!-- Dummy rows – will be generated by the backend later -->
+                    <tbody>
+                        <tr>
+                            <td>Mathematics</td>
+                            <td>Monday</td>
+                            <td>09:00 – 10:30</td>
+                            <td><span class="status completed">Completed</span></td>
+                            <td class="student-count">2 students</td>
+                            <td><button class="btn-edit" data-subject="Mathematics">Edit</button></td>
+                        </tr>
+
+                        <tr>
+                            <td>Physics</td>
+                            <td>Wednesday</td>
+                            <td>13:00 – 14:30</td>
+                            <td><span class="status scheduled">Scheduled</span></td>
+                            <td class="student-count">1 student</td>
+                            <td><button class="btn-edit" data-subject="Physics">Edit</button></td>
+                        </tr>
+
+                        <tr>
+                            <td>Chemistry</td>
+                            <td>Friday</td>
+                            <td>15:00 – 16:30</td>
+                            <td><span class="status canceled">Canceled</span></td>
+                            <td>—</td>
+                            <td><button class="btn-edit" data-subject="Chemistry">Edit</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Add-new-class button -->
+            <button id="btnAddClass" class="btn-primary">
+                + Add Class
+            </button>
+        </section>
+
+        <!-- 3) List of Students -->
+        <section id="listOfStudents" class="page">
+            <h2>List of Students</h2>
+            
+            <!-- Search and filter controls -->
+            <div class="student-controls">
+                <input type="text" class="search-box" placeholder="Search students...">
+                <select class="filter-select">
+                    <option value="all">All Students</option>
+                    <option value="paid">Paid</option>
+                    <option value="pending">Payment Pending</option>
+                    <option value="overdue">Payment Overdue</option>
+                </select>
+            </div>
+            
+            <div style="overflow-x:auto;">
+                <table class="student-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Phone Number</th>
+                            <th>Address</th>
+                            <th>Email</th>
+                            <th>Payment Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Alice Johnson</td>
+                            <td>(555) 123-4567</td>
+                            <td>123 Main St, Anytown</td>
+                            <td>alice@example.com</td>
+                            <td><span class="status paid">Paid</span></td>
+                        </tr>
+                        <tr>
+                            <td>Bob Smith</td>
+                            <td>(555) 234-5678</td>
+                            <td>456 Oak Ave, Somewhere</td>
+                            <td>bob@example.com</td>
+                            <td><span class="status pending">Pending</span></td>
+                        </tr>
+                        <tr>
+                            <td>Charlie Brown</td>
+                            <td>(555) 345-6789</td>
+                            <td>789 Pine Rd, Nowhere</td>
+                            <td>charlie@example.com</td>
+                            <td><span class="status overdue">Overdue</span></td>
+                        </tr>
+                        <tr>
+                            <td>David Wilson</td>
+                            <td>(555) 456-7890</td>
+                            <td>321 Elm Blvd, Anywhere</td>
+                            <td>david@example.com</td>
+                            <td><span class="status paid">Paid</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <!-- Edit Class Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Class Details</h3>
+                <button class="close-btn">&times;</button>
+            </div>
+            <table class="modal-table">
+                <thead>
+                    <tr>
+                        <th>Subject</th>
+                        <th>Day</th>
+                        <th>Time</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td id="modal-subject">Mathematics</td>
+                        <td>
+                            <select id="modal-day">
+                                <option value="Monday">Monday</option>
+                                <option value="Tuesday">Tuesday</option>
+                                <option value="Wednesday">Wednesday</option>
+                                <option value="Thursday">Thursday</option>
+                                <option value="Friday">Friday</option>
+                                <option value="Saturday">Saturday</option>
+                                <option value="Sunday">Sunday</option>
+                            </select>
+                        </td>
+                        <td>
+                            <div class="time-inputs">
+                                <input type="time" id="modal-start-time" value="09:00">
+                                <span>to</span>
+                                <input type="time" id="modal-end-time" value="10:30">
+                            </div>
+                        </td>
+                        <td>
+                            <select id="modal-status">
+                                <option value="completed">Completed</option>
+                                <option value="scheduled">Scheduled</option>
+                                <option value="canceled">Canceled</option>
+                            </select>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="modal-actions">
+                <button class="btn-cancel">Cancel</button>
+                <button class="btn-save">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Class Modal -->
+    <div id="addModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Class</h3>
+                <button class="close-btn">&times;</button>
+            </div>
+            <table class="modal-table">
+                <thead>
+                    <tr>
+                        <th>Subject</th>
+                        <th>Day</th>
+                        <th>Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <input type="text" id="add-subject" placeholder="Enter subject name">
+                        </td>
+                        <td>
+                            <select id="add-day">
+                                <option value="Monday">Monday</option>
+                                <option value="Tuesday">Tuesday</option>
+                                <option value="Wednesday">Wednesday</option>
+                                <option value="Thursday">Thursday</option>
+                                <option value="Friday">Friday</option>
+                                <option value="Saturday">Saturday</option>
+                                <option value="Sunday">Sunday</option>
+                            </select>
+                        </td>
+                        <td>
+                            <div class="time-inputs">
+                                <input type="time" id="add-start-time" value="09:00">
+                                <span>to</span>
+                                <input type="time" id="add-end-time" value="10:30">
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="modal-actions">
+                <button class="btn-cancel">Cancel</button>
+                <button class="btn-save">Add Class</button>
+            </div>
+        </div>
+    </div>
+
+	<script>
+		// ====== CONFIG ======
+		const API_BASE = "http://localhost:8080/api";
+		const tutorId = sessionStorage.getItem("userId"); // must be set at login
+
+		// ====== Generic API helper ======
+		async function apiRequest(path, method = "GET", body) {
+		    const res = await fetch(`${API_BASE}${path}`, {
+		        method,
+		        headers: { 'Content-Type': 'application/json' },
+		        body: body ? JSON.stringify(body) : null
+		    });
+		    if (!res.ok) throw new Error(await res.text());
+		    return res.json();
+		}
+
+		// ====== Load tutor classes (existing, do NOT change) ======
+		async function loadTutorClasses() {
+		    try {
+		        const res = await fetch(`${API_BASE}/classes/tutor/${tutorId}`);
+		        const classes = await res.json();
+		        console.log("Loaded classes:", classes); // debug
+		        loadedClasses = classes;
+		        document.querySelector('.adjustment-table tbody').innerHTML = classes.map(c => `
+		            <tr>
+		                <td>${c.subject}</td>
+		                <td>${c.day}</td>
+		                <td>${c.startTime} – ${c.endTime}</td>
+		                <td><span class="status ${c.status ? c.status.toLowerCase() : ''}">${c.status}</span></td>
+		                <td class="student-count">${c.studentIds ? c.studentIds.length : 0} students</td>
+		                <td><button class="btn-edit" data-id="${c.id}" data-subject="${c.subject}">Edit</button></td>
+		            </tr>`).join('');
+		        attachEditButtons();
+		    } catch (e) {
+		        console.error(e);
+		        alert("Failed to load classes");
+		    }
+		}
+
+		// ====== Load students ======
+		let allStudents = []; // keep for search & filter
+
+		async function loadStudents() {
+		    try {
+		        const students = await apiRequest("/student/all");
+		        console.log("Loaded students:", students);
+		        allStudents = students; // store globally
+		        renderStudentTable(allStudents);
+		    } catch (err) {
+		        console.error(err);
+		        alert("Failed to load students");
+		    }
+		}
+
+		// Render helper
+		function renderStudentTable(students) {
+		    const tbody = document.querySelector('.student-table tbody');
+		    tbody.innerHTML = students.map(s => `
+		        <tr>
+		            <td>${s.name || '-'}</td>
+		            <td>${s.phone || '-'}</td>
+		            <td>${s.address || '-'}</td>
+		            <td>${s.email || '-'}</td>
+		            <td><span class="status paid">Paid</span></td> <!-- fixed dummy status -->
+		        </tr>`).join('');
+		}
+
+		// ====== Search & filter ======
+		const searchBox = document.querySelector('.search-box');
+		const filterSelect = document.querySelector('.filter-select');
+
+		searchBox.addEventListener('input', applyFilterAndSearch);
+		filterSelect.addEventListener('change', applyFilterAndSearch);
+
+		function applyFilterAndSearch() {
+		    const searchText = searchBox.value.trim().toLowerCase();
+		    const selectedFilter = filterSelect.value;
+
+		    let filtered = allStudents;
+
+		    // Dummy filter: always paid; if you store real paymentStatus, replace below
+		    if (selectedFilter !== 'all') {
+		        filtered = filtered.filter(s => selectedFilter === 'paid'); // dummy
+		    }
+
+		    if (searchText) {
+		        filtered = filtered.filter(s =>
+		            (s.name || '').toLowerCase().includes(searchText) ||
+		            (s.email || '').toLowerCase().includes(searchText) ||
+		            (s.address || '').toLowerCase().includes(searchText) ||
+		            (s.phone || '').toLowerCase().includes(searchText)
+		        );
+		    }
+
+		    renderStudentTable(filtered);
+		}
+
+		// ====== Edit Modal Logic ======
+		const editModal = document.getElementById('editModal');
+		const addModal = document.getElementById('addModal');
+
+		function attachEditButtons() {
+		    document.querySelectorAll('.btn-edit').forEach(btn => {
+		        btn.addEventListener('click', () => {
+		            const subject = btn.dataset.subject;
+		            const classId = btn.dataset.id;
+		            document.getElementById('modal-subject').textContent = subject;
+		            editModal.dataset.classId = classId;
+		            editModal.style.display = 'flex';
+		        });
+		    });
+		}
+
+		document.querySelector('#editModal .btn-save').addEventListener('click', async () => {
+		    const classId = editModal.dataset.classId;
+		    const day = document.getElementById('modal-day').value;
+		    const startTime = document.getElementById('modal-start-time').value;
+		    const endTime = document.getElementById('modal-end-time').value;
+		    const status = document.getElementById('modal-status').value.toUpperCase();
+
+		    try {
+		        await apiRequest(`/classes/${classId}`, "PUT", { day, startTime, endTime, status });
+		        alert('Changes saved!');
+		        editModal.style.display = 'none';
+		        loadTutorClasses();
+		    } catch (err) {
+		        console.error(err);
+		        alert('Failed to save changes');
+		    }
+		});
+
+		// ====== Add Class Modal Logic ======
+		document.getElementById('btnAddClass').addEventListener('click', () => {
+		    addModal.style.display = 'flex';
+		});
+
+		document.querySelector('#addModal .btn-save').addEventListener('click', async () => {
+		    const subject = document.getElementById('add-subject').value;
+		    const day = document.getElementById('add-day').value;
+		    const startTime = document.getElementById('add-start-time').value;
+		    const endTime = document.getElementById('add-end-time').value;
+
+		    if (!subject) {
+		        alert('Please enter a subject name');
+		        return;
+		    }
+
+		    try {
+		        await apiRequest('/classes', "POST", {
+		            subject,
+		            day,
+		            startTime,
+		            endTime,
+		            status: "SCHEDULED",
+		            tutorId: Number(tutorId),
+		            studentIds: []
+		        });
+		        alert('New class added!');
+		        addModal.style.display = 'none';
+		        document.getElementById('add-subject').value = '';
+		        loadTutorClasses();
+		    } catch (err) {
+		        console.error(err);
+		        alert('Failed to add class');
+		    }
+		});
+
+		// ====== Navigation Logic ======
+		document.querySelectorAll('.nav-btn').forEach(btn => {
+		    btn.addEventListener('click', () => {
+		        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+		        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+		        btn.classList.add('active');
+		        document.getElementById(btn.dataset.target).classList.add('active');
+		    });
+		});
+
+		// ====== Modal close logic ======
+		document.querySelectorAll('.close-btn, .btn-cancel').forEach(btn => {
+		    btn.addEventListener('click', () => {
+		        editModal.style.display = 'none';
+		        addModal.style.display = 'none';
+		    });
+		});
+		window.addEventListener('click', e => {
+		    if (e.target.classList.contains('modal')) e.target.style.display = 'none';
+		});
+
+		// ====== Logout Logic ======
+		document.getElementById('logoutBtn').addEventListener('click', () => {
+		    if (confirm('Are you sure you want to logout?')) {
+		        sessionStorage.clear();
+		        window.location.href = 'tms-login.html';
+		    }
+		});
+
+		// ====== INIT ======
+		document.addEventListener("DOMContentLoaded", () => {
+		    loadTutorClasses();
+		    loadStudents();
+		});
+
+	</script>
+
+
+</body>
+</html>

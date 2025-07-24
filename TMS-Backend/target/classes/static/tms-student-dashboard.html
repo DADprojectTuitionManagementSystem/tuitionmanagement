@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tuition Management</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* ========= RESET ========= */
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        /* ===== DASHBOARD STYLES ===== */
+        .dashboard-body{
+            display:flex;
+            height:100vh;
+            overflow:hidden;
+        }
+        .sidebar{
+            width:220px;
+            background:#a78bfa;
+            display:flex;
+            flex-direction:column;
+            padding:25px 0;
+            box-shadow:2px 0 5px rgba(0,0,0,.1);
+        }
+        .sidebar h3{
+            color:#fff;
+            text-align:center;
+            margin-bottom:30px;
+            font-size:18px;
+        }
+        .sidebar button, .sidebar a{
+            background:transparent;
+            border:none;
+            color:#fff;
+            padding:15px 25px;
+            width:100%;
+            text-align:left;
+            cursor:pointer;
+            font-size:15px;
+            transition:background .2s;
+            border-left:4px solid transparent;
+            text-decoration:none;
+            display:block;
+        }
+        .sidebar button.active,
+        .sidebar button:hover,
+        .sidebar a.active,
+        .sidebar a:hover{
+            background:#8b5cf6;
+            border-left:4px solid #fff;
+        }
+        .main-content{
+            flex:1;
+            padding:40px;
+            background:#fff;
+            overflow-y:auto;
+        }
+        .page{
+            display:none;
+        }
+        .page.active{
+            display:block;
+        }
+        .page h2{
+            margin-bottom:20px;
+            color:#333;
+        }
+
+        /* ===== ADD CLASS STYLES ===== */
+        .add-class-body{
+            height:100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display:flex;
+            align-items:center;
+            justify-content:center;
+        }
+        .add-class-card{
+            width:100%;
+            max-width:400px;
+            background:#fff;
+            border-radius:12px;
+            padding:40px 30px;
+            box-shadow:0 15px 30px rgba(0,0,0,.25);
+        }
+        .add-class-card h2{
+            text-align:center;
+            margin-bottom:30px;
+            color:#333;
+        }
+        .input-group{
+            margin-bottom:25px;
+        }
+        .input-group label{
+            display:block;
+            margin-bottom:6px;
+            font-size:14px;
+            color:#555;
+        }
+        .input-group select{
+            width:100%;
+            padding:12px 15px;
+            border:1px solid #bbb;
+            border-radius:6px;
+            font-size:16px;
+            transition:border .3s;
+        }
+        .input-group select:focus{
+            outline:none;
+            border-color:#667eea;
+        }
+        .btn-row{
+            display:flex;
+            gap:12px;
+        }
+        .btn{
+            flex:1;
+            padding:12px;
+            border:none;
+            border-radius:6px;
+            font-size:16px;
+            cursor:pointer;
+            transition:background .3s;
+        }
+        .confirm-btn{
+            background:#667eea;
+            color:#fff;
+        }
+        .confirm-btn:hover{
+            background:#5a67d8;
+        }
+        .back-btn{
+            background:#e2e8f0;
+            color:#333;
+        }
+        .back-btn:hover{
+            background:#cbd5e0;
+        }
+
+        /* ===== PAYMENT STYLES ===== */
+        .payment-body{
+            height:100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display:flex;
+            align-items:center;
+            justify-content:center;
+        }
+        .payment-card{
+            width:100%;
+            max-width:420px;
+            background:#fff;
+            border-radius:12px;
+            padding:40px 30px;
+            box-shadow:0 15px 30px rgba(0,0,0,.25);
+        }
+        .payment-card h2{
+            text-align:center;
+            margin-bottom:25px;
+            color:#333;
+        }
+        .order-summary{
+            margin-bottom:20px;
+        }
+        .order-summary h3{
+            margin-bottom:10px;
+            color:#555;
+            font-size:16px;
+        }
+        .order-summary table{
+            width:100%;
+            border-collapse:collapse;
+            margin-bottom:10px;
+        }
+        .order-summary th, .order-summary td{
+            padding:8px 0;
+            text-align:left;
+            font-size:15px;
+        }
+        .order-summary th:last-child,
+        .order-summary td:last-child{
+            text-align:right;
+        }
+        .total-row td{
+            font-weight:bold;
+            border-top:1px solid #ddd;
+            padding-top:12px;
+        }
+        .pay-btn{
+            background:#667eea;
+            color:#fff;
+        }
+        .pay-btn:hover{
+            background:#5a67d8;
+        }
+        .cancel-btn{
+            background:#e2e8f0;
+            color:#333;
+        }
+        .cancel-btn:hover{
+            background:#cbd5e0;
+        }
+
+        /* ===== VIEW MANAGEMENT ===== */
+        .view {
+            display: none;
+            height: 100vh;
+            width: 100vw;
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
+        .view.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- ===== DASHBOARD VIEW ===== -->
+    <div id="dashboardView" class="view active">
+        <div class="dashboard-body">
+            <aside class="sidebar">
+                <h3>Student Dashboard</h3>
+                <button class="nav-btn active" data-target="displayStudentClass">Display Student Class</button>
+                <button class="nav-btn" data-target="displayTuitionFee">Display Tuition Fee</button>
+                <button class="nav-link-btn" data-target="addClassView">Add Class</button>
+				<button class="logout-btn" id="logoutBtn">
+				            <i class="fas fa-sign-out-alt"></i>
+				            <span>Logout</span>
+				        </button>
+            </aside>
+
+            <main class="main-content">
+                <section id="displayStudentClass" class="page active">
+                    <h2>Display Student Class</h2>
+                    <p>Here you will load & display the list of enrolled classes from the database.</p>
+                </section>
+
+                <section id="displayTuitionFee" class="page">
+                    <h2>Display Tuition Fee</h2>
+                    <p>Here you will load & display the tuition fee details from the database.</p>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <!-- ===== ADD CLASS VIEW ===== -->
+    <div id="addClassView" class="view">
+        <div class="add-class-body">
+            <div class="add-class-card">
+                <h2>Add Class</h2>
+                <form id="addClassForm">
+                    <div class="input-group">
+                        <label for="subjectSelect">Choose Subject</label>
+                        <select id="subjectSelect" required>
+                            <option value="" disabled selected>Select a subject</option>
+                            <option value="Bahasa Melayu">Bahasa Melayu</option>
+                            <option value="English">English</option>
+                            <option value="Mathematics">Mathematics</option>
+                            <option value="Science">Science</option>
+                        </select>
+                    </div>
+                    <div class="btn-row">
+                        <button type="button" class="btn back-btn" data-target="dashboardView">Back</button>
+                        <button type="submit" class="btn confirm-btn">Confirm</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== PAYMENT VIEW ===== -->
+    <div id="paymentView" class="view">
+        <div class="payment-body">
+            <div class="payment-card">
+                <h2>Payment</h2>
+                <div class="order-summary">
+                    <h3>Subject & Price</h3>
+                    <table id="orderTable"></table>
+                    <table>
+                        <tr class="total-row">
+                            <td>Total</td>
+                            <td id="totalPrice">RM 0.00</td>
+                        </tr>
+                    </table>
+                </div>
+                <form id="paymentForm">
+                    <div class="input-group">
+                        <label for="paymentMethod">Payment Method</label>
+                        <select id="paymentMethod" required>
+                            <option value="" disabled selected>Select payment method</option>
+                            <option value="Credit/Debit">Credit / Debit Card</option>
+                            <option value="Online Banking">Online Banking</option>
+                        </select>
+                    </div>
+                    <div class="btn-row">
+                        <button type="button" class="btn cancel-btn" data-target="addClassView">Cancel</button>
+                        <button type="submit" class="btn pay-btn">Pay</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+	<script>
+	const API_BASE = "http://localhost:8080/api";
+	const studentId = sessionStorage.getItem("userId");
+
+	// Sidebar nav: highlight active
+	document.querySelectorAll('.nav-btn').forEach(btn => {
+	    btn.addEventListener('click', () => {
+	        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+	        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+	        btn.classList.add('active');
+	        document.getElementById(btn.dataset.target).classList.add('active');
+	    });
+	});
+
+	// View switch (addClassView, paymentView, etc.)
+	document.querySelectorAll('[data-target]').forEach(btn => {
+	    if (!btn.classList.contains('nav-btn')) {
+	        btn.addEventListener('click', () => showView(btn.dataset.target));
+	    }
+	});
+	function showView(id) {
+	    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+	    document.getElementById(id).classList.add('active');
+	}
+
+	// Subject prices
+	function getPrice(subject) {
+	    return { "Bahasa Melayu":100, "English":100, "Mathematics":120, "Science":110 }[subject] || 0;
+	}
+
+	// Fetch helper
+	async function apiRequest(path, method="GET", body) {
+	    const res = await fetch(`${API_BASE}${path}`, {
+	        method,
+	        headers: {'Content-Type':'application/json'},
+	        body: body ? JSON.stringify(body) : null
+	    });
+	    if (!res.ok) {
+	        const msg = await res.text();
+	        throw new Error(`Error ${res.status}: ${msg}`);
+	    }
+	    return res.json();
+	}
+
+	// Load student classes
+	async function loadStudentClasses() {
+	    try {
+	        const classes = await apiRequest(`/classes/student/${studentId}`);
+	        let html = "<h2>Display Student Class</h2>";
+	        if (classes.length) {
+	            html += `
+	                <table style="width:100%;border-collapse:collapse;">
+	                    <tr>
+	                        <th style="text-align:left; border-bottom:1px solid #ccc; padding:8px;">Subject</th>
+	                        <th style="text-align:left; border-bottom:1px solid #ccc; padding:8px;">Day</th>
+	                        <th style="text-align:left; border-bottom:1px solid #ccc; padding:8px;">Time</th>
+	                        <th style="text-align:left; border-bottom:1px solid #ccc; padding:8px;">Status</th>
+	                    </tr>
+	                    ${classes.map(c => `
+	                        <tr>
+	                            <td style="padding:8px;">${c.subject}</td>
+	                            <td style="padding:8px;">${c.day}</td>
+	                            <td style="padding:8px;">${c.startTime} - ${c.endTime}</td>
+	                            <td style="padding:8px;">${c.status}</td>
+	                        </tr>
+	                    `).join("")}
+	                </table>
+	            `;
+	        } else {
+	            html += "<p>No enrolled classes.</p>";
+	        }
+	        document.getElementById('displayStudentClass').innerHTML = html;
+	    } catch (e) {
+	        console.error(e);
+	        alert("Failed to load classes");
+	    }
+	}
+
+	// Load tuition fee
+	async function loadTuitionFee() {
+	    try {
+	        const fees = await apiRequest(`/payments/student/${studentId}`);
+	        let html = "<h2>Display Tuition Fee</h2>";
+	        if (fees.length) {
+	            html += `
+	                <table style="width:100%;border-collapse:collapse;">
+	                    <tr>
+	                        <th style="text-align:left; border-bottom:1px solid #ccc; padding:8px;">Method</th>
+	                        <th style="text-align:left; border-bottom:1px solid #ccc; padding:8px;">Amount</th>
+	                        <th style="text-align:left; border-bottom:1px solid #ccc; padding:8px;">Status</th>
+	                        <th style="text-align:left; border-bottom:1px solid #ccc; padding:8px;">Date</th>
+	                    </tr>
+	                    ${fees.map(f => `
+	                        <tr>
+	                            <td style="padding:8px;">${f.method}</td>
+	                            <td style="padding:8px;">RM ${f.amount.toFixed(2)}</td>
+	                            <td style="padding:8px;">${f.status}</td>
+	                            <td style="padding:8px;">${f.createdDate ? f.createdDate.substring(0, 10) : ''}</td>
+	                        </tr>
+	                    `).join("")}
+	                </table>
+	            `;
+	        } else {
+	            html += "<p>No payments found.</p>";
+	        }
+	        document.getElementById('displayTuitionFee').innerHTML = html;
+	    } catch (e) {
+	        console.error(e);
+	        alert("Failed to load tuition fees");
+	    }
+	}
+
+
+	// Add Class form submit → show payment view
+	document.getElementById('addClassForm').addEventListener('submit', e => {
+	    e.preventDefault();
+	    const subject = document.getElementById('subjectSelect').value;
+	    if (!subject) return alert("Select a subject");
+	    sessionStorage.setItem('selectedSubject', subject);
+	    updatePaymentDetails();
+	    showView('paymentView');
+	});
+
+	// Update payment view with selected subject & price
+	function updatePaymentDetails() {
+	    const subject = sessionStorage.getItem('selectedSubject');
+	    const price = getPrice(subject);
+	    document.getElementById('orderTable').innerHTML =
+	        `<tr><td>${subject}</td><td>RM ${price.toFixed(2)}</td></tr>`;
+	    document.getElementById('totalPrice').textContent = `RM ${price.toFixed(2)}`;
+	}
+
+	// Payment form submit: add payment + class + receipt
+	document.getElementById('paymentForm').addEventListener('submit', async e => {
+	    e.preventDefault();
+	    const method = document.getElementById('paymentMethod').value;
+	    const subject = sessionStorage.getItem('selectedSubject');
+	    if (!method) return alert("Choose payment method");
+	    try {
+	        // Add payment
+	        await apiRequest("/payments", "POST", {
+	            amount: getPrice(subject),
+	            method,
+	            status: "PAID",
+	            studentId: Number(studentId)
+	        });
+	        // Add class
+	        await apiRequest("/classes", "POST", {
+	            subject,
+	            day: "Monday",
+	            startTime: "14:00",
+	            endTime: "16:00",
+	            status: "ACTIVE",
+	            tutorId: 1,
+	            studentIds: [Number(studentId)]
+	        });
+	        generatePdf(subject, method);
+	        alert("Payment & class added!");
+	        showView('dashboardView');
+	        loadStudentClasses();
+	        loadTuitionFee();
+	    } catch (err) {
+	        console.error(err);
+	        alert("Failed to add payment/class:\n" + err.message);
+	    }
+	});
+
+	// Generate PDF receipt
+	function generatePdf(subject, method) {
+	    const {jsPDF} = window.jspdf;
+	    const doc = new jsPDF();
+	    doc.text("Tuition Payment Receipt", 20, 20);
+	    doc.text(`Subject: ${subject}`, 20, 40);
+	    doc.text(`Method: ${method}`, 20, 50);
+	    doc.text(`Price: RM ${getPrice(subject).toFixed(2)}`, 20, 60);
+	    doc.save("receipt.pdf");
+	}
+
+	// Logout
+	document.querySelector('.logout-btn').addEventListener('click', () => {
+	    sessionStorage.clear();
+	    window.location.href = "tms-login.html";
+	});
+
+	// Init on load
+	document.addEventListener("DOMContentLoaded", () => {
+	    loadStudentClasses();
+	    loadTuitionFee();
+	});
+	</script>
+
+
+</body>
+</html>
