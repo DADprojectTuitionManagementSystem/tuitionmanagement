@@ -86,7 +86,7 @@ The backend of this tuition management system is built using a combination of po
 #### 3.2.2 Request Format
 
 Example (POST `/api/classes`):
-```json
+json
 {
   "subject": "Math",
   "day": "Monday",
