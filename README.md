@@ -49,6 +49,16 @@ A web based tuition class management system for tutors, students and payments
   ### 1.2 Commercial Value / Third-Party Integration
 The Tuition Management System has a strong commercial potential especially for private tutors, freelance educator and tuition centers as the system can cater from small to big audience. The system seek a streamlined digital solution in managing daily operation usually done by human. This system can be offered as a software-as-a-services (SaaS) platform, targeting small to medium tuition educators.
 
+The system uses **JavaScript** as its core programming language, making it efficient and versatile for both frontend and backend development. Data is exchanged between the frontend and backend in **JSON (JavaScript Object Notation)** format, which is lightweight, easy to parse and widely supported across platforms.
+
+To improve security and user experience, the system can also integrate with third-party services:
+
+- **Firebase Authentication**  
+  Used for secure login and registration. It supports role-based access (e.g., student, tutor, admin) and simplifies password handling and user management.
+
+- **JWT (JSON Web Token)**  
+  After login, JWTs are issued and stored on the client side, then sent with API requests to authenticate the user. This protects sensitive operations like class creation and payment processing.
+
 
 
 # 2.0 System Architecture
