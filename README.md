@@ -102,6 +102,39 @@ Example (POST `/api/classes`):
 
 5.1 Entity Relationship Diagram
 
+5.2 Data Validation Rules
+
+This section outlines the key validation rules implemented across both the **Student** and **Tutor** applications. These rules ensure user inputs are complete, correct, and compatible with backend requirements.
+
+### 🔹 **Student App Validation**
+
+| Field              | Rule                                                                       | Type             | Message / Action                    |
+| ------------------ | -------------------------------------------------------------------------- | ---------------- | ----------------------------------- |
+| Subject Selection  | Must select a subject from the dropdown (not default)                      | Required Field   | `alert("Select a subject")`         |
+| Payment Method     | Must select a payment method                                               | Required Field   | `alert("Choose payment method")`    |
+| Subject Price      | Only allowed values: `"Bahasa Melayu"`, `"English"`, `"Math"`, `"Science"` | Enumerated List  | Subject not in list → block payment |
+| Payment Amount     | Calculated from subject (e.g., Math = RM120)                               | Internal Logic   | Prevent price tampering             |
+| Receipt Generation | PDF auto-generated after successful payment                                | System Generated | File: `receipt.pdf`                 |
+
+### 🔹 **Tutor App Validation**
+
+| Field                   | Rule                                                 | Type             | Message / Action                       |
+| ----------------------- | ---------------------------------------------------- | ---------------- | -------------------------------------- |
+| Add Class - Subject     | Subject name cannot be blank                         | Required Field   | `alert("Please enter a subject name")` |
+| Edit Class - Day        | Must select a valid day from dropdown (Mon–Sun)      | Required Field   | Validation at modal level              |
+| Edit Class - Time       | Start time must be before end time                   | Logical Check    | If invalid: prevent save               |
+| Edit Class - Status     | Must be one of: `Completed`, `Scheduled`, `Canceled` | Enumerated Field | Invalid status blocks update           |
+| Filter/ Search Students | Optional; no restrictions                            | Optional         | —                                      |
+
+### 🔹 **Backend API Validation (Spring Boot)**
+
+| Field                          | Rule                                       | HTTP Error if Violated   |
+| ------------------------------ | ------------------------------------------ | ------------------------ |
+| `POST /api/classes`            | Subject, day, time must be provided        | `400 Bad Request`        |
+| `POST /api/payments`           | Amount, method, and studentId are required | `400 Bad Request`        |
+| All endpoints with `ID` params | Must be valid integers and exist in DB     | `404 Not Found` or `400` |
+
+
 
 
 
