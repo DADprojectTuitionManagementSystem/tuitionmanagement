@@ -102,6 +102,8 @@ json
 
 ## 5.0 Database Design
 ### 5.1 ERD diagram
+<img width="1594" height="993" alt="image" src="https://github.com/user-attachments/assets/b58143b9-b452-4e9b-bd82-4c205befa516" />
+
 
 ### 5.2 Schema Justification
 The database schema is designed to support the system's core functionalities such as user management, class scheduling and payment tracking. The schema follows normalization principles to avoid redundancy and ensure data integrity.
