@@ -67,6 +67,7 @@ To enhance its functionality and security, the system also integrated with the f
 
   ### 2.1 High-Level Diagram
 
+<img width="598" height="576" alt="image" src="https://github.com/user-attachments/assets/85b93fdc-97a1-4486-9d77-e609d10a2005" />
 
 ## 3.0 Backend Application
 
