@@ -98,55 +98,32 @@ json
 ### 3.2.3 Example Success
 <img width="1594" height="993" alt="image" src="https://github.com/user-attachments/assets/6fe99180-5888-49f2-a4cf-de423aa23220" />
 
+### 3.2.4 Security Measure
+<img width="1100" height="553" alt="image" src="https://github.com/user-attachments/assets/e2572cc0-1888-428e-9fcf-4180af16db46" />
+
+Security measures implemented:
+
+Disabled CSRF protection → because the backend is likely a stateless REST API using tokens (e.g., JWT), so CSRF isn’t needed.
+
+Allowed public access (permitAll) to login pages, dashboards, API endpoints for auth/classes/payments, and static resources (CSS, JS, images) → so the frontend can load properly and users can access login features without being blocked.
+
+Disabled Spring’s default form login and HTTP Basic auth → because the app uses a custom frontend login page and handles authentication via its own API.
+
+Why:
+
+The backend serves as an API for a separate frontend rather than a traditional server-rendered app.
+
+Token-based authentication makes CSRF protection and built-in login mechanisms unnecessary.
+
+Public access is needed for initial pages and resources, while actual data protection would be handled by custom API security (e.g., JWT).
+
+
 
 
 ## 5.0 Database Design
 ### 5.1 ERD diagram
 
 ### 5.2 Schema Justification
-The database schema is designed to support the system's core functionalities such as user management, class scheduling and payment tracking. The schema follows normalization principles to avoid redundancy and ensure data integrity.
-
----
-
-####  user Table
-- *Purpose: Stores both **students* and *tutors*.
-- *Key Fields*:
-  - id: Primary key.
-  - name, email, username: Basic identity fields.
-  - role: Differentiates between 'STUDENT' and 'TUTOR'.
-- *Justification*: A single unified table with a role field simplifies user management and authentication without needing separate tables for tutors and students.
-
----
-
-#### class_entity Table
-- *Purpose*: Stores information about tuition classes.
-- *Key Fields*:
-  - id: Primary key.
-  - subject, day, start_time, end_time: Class details.
-  - tutor_id: Foreign key to user.id (must have role = 'tutor').
-- *Justification*: Each class is linked to one tutor. Storing class timing and subject allows for flexible scheduling and conflict checking.
-
----
-
-#### class_entity_student_ids Table
-- *Purpose*: Bridge for classes and students.
-- *Key Fields*:
-  - class_entity_id: Foreign key to class_entity.id.
-  - student_ids: Foreign key to user.id (must have role = 'student').
-- *Justification*: Supports assigning multiple students to a class and reusing classes across terms. It maintains relational integrity without storing arrays or comma-separated lists.
-
----
-
-#### payment Table
-- *Purpose*: Records payment transactions from students.
-- *Key Fields*:
-  - id: Primary key.
-  - student_id: Foreign key to user.id.
-  - amount, method, status: Details of each payment.
-  - created_date: Timestamp of the transaction.
-- *Justification*: This allows tracking of who paid, how much, and by which method. The status field helps in monitoring pending or failed payments.
-
----
 
 ## 6.0 Business Logic & Data Validation
 
