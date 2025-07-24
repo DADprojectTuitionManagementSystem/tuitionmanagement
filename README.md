@@ -49,24 +49,26 @@ A web based tuition class management system for tutors, students and payments
   ### 1.2 Commercial Value / Third-Party Integration
 The Tuition Management System has a strong commercial potential especially for private tutors, freelance educator and tuition centers as the system can cater from small to big audience. The system seek a streamlined digital solution in managing daily operation usually done by human. This system can be offered as a software-as-a-services (SaaS) platform, targeting small to medium tuition educators.
 
-The system uses **JavaScript** as its core programming language, making it efficient and versatile for both frontend and backend development. Data is exchanged between the frontend and backend in **JSON (JavaScript Object Notation)** format, which is lightweight, easy to parse and widely supported across platforms.
+The system architecture separates the frontend and backend layers, enabling easier maintenance and future scalability. The frontend interface is built using **HTML**, offering a lightweight and accessible UI for users. Communication between the frontend and backend is handled using **JavaScript** and **JSON**, allowing smooth asynchronous data exchange.
 
-To improve security and user experience, the system can also integrate with third-party services:
+The backend is powered by **Java with Spring Boot**, ensuring a secure server-side application. Data is stored in a MySQL database, and the system enforces user roles and access control through authentication mechanisms.
+
+To enhance its functionality and security, the system also integrated with the following third-party services:
 
 - **Firebase Authentication**  
-  Used for secure login and registration. It supports role-based access (e.g., student, tutor, admin) and simplifies password handling and user management.
+  Handles secure user registration and login. Supports role-based access (student, tutor, admin) and simplifies password management.
 
 - **JWT (JSON Web Token)**  
-  After login, JWTs are issued and stored on the client side, then sent with API requests to authenticate the user. This protects sensitive operations like class creation and payment processing.
+  Used for securing API routes. After login, a token is generated and attached to each request header, ensuring only authorized users can access sensitive operations.
 
 
 
-# 2.0 System Architecture
+## 2.0 System Architecture
 
   ### 2.1 High-Level Diagram
 
 
-# 3. Backend Application
+## 3.0 Backend Application
 
 ### 3.1 Technology Stack
 
@@ -79,32 +81,27 @@ The backend of this tuition management system is built using a combination of po
 | Framework         | Spring Boot          |
 | Database          | MySQL                |
 
+---
 
 ### 3.2 API Documentation
+This system provides RESTful API endpoints that allow communication between the frontend (HTML/JavaScript) and the backend (Java Spring Boot). All data is exchanged in JSON format. The endpoints below are used for user authentication, class management and payment processing.
 
 #### 3.2.1 Endpoints List
+The table below outlines the main API endpoints used in the tuition management system. These endpoints allow users to authenticate, view or manage class schedules, and process payments. All endpoints follow REST principles and return data in JSON format.
 
-| Endpoint             | Method | Description                  |
-|----------------------|--------|------------------------------|
-| `/api/users`         | GET    | List all users               |
-| `/api/users/:id`     | GET    | Get user by ID               |
-| `/api/classes`       | GET    | Get all classes              |
-| `/api/classes`       | POST   | Create a new class           |
-| `/api/payments`      | POST   | Make a payment               |
-| `/api/login`         | POST   | Login and receive token      |
+| Endpoint                         | Method | Description                     | Authentication Required |
+|----------------------------------|--------|----------------------------------|---------------|
+| `/api/auth/login`               | POST   | Log in and receive access token | No             |
+| `/api/classes/`                 | GET    | Get list of all classes         | Yes            |
+| `/api/classes/`                 | POST   | Create a new class              | Yes            |
+| `/api/payments/`                | GET    | Get payment records             | Yes            |
+| `/api/payments/`                | POST   | Submit a payment                | Yes            |
+
 
 #### 3.2.2 Request Format
 
-Example (POST `/api/classes`):
-json
-{
-  "subject": "Math",
-  "day": "Monday",
-  "start_time": "10:00",
-  "end_time": "11:30",
-  "tutor_id": 2
-}
 
+---
 ### 3.2.3 Example Success
 <img width="1594" height="993" alt="image" src="https://github.com/user-attachments/assets/6fe99180-5888-49f2-a4cf-de423aa23220" />
 
