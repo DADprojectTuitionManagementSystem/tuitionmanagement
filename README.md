@@ -66,6 +66,7 @@ To enhance its functionality and security, the system also integrated with the f
 ## 2.0 System Architecture
 
   ### 2.1 High-Level Diagram
+The high-level architecture illustrates how the core components of the tuition management system interact:
 
 <img width="598" height="576" alt="image" src="https://github.com/user-attachments/assets/85b93fdc-97a1-4486-9d77-e609d10a2005" />
 
@@ -206,16 +207,17 @@ Token-based authentication makes CSRF protection and built-in login mechanisms u
 
 Public access is needed for initial pages and resources, while actual data protection would be handled by custom API security (e.g., JWT).
 
+## 4.0 Frontend Application
 
-## 4.1 Student App
+### 4.1 Student App
 
 #### 4.1.1 Purpose
 The Student App is designed to empower students with self-service functionalities for managing their tuition activities. It allows students to view enrolled classes (subject, schedule, status), check tuition fees, enroll in new classes, and make payments seamlessly. The app also generates downloadable PDF receipts for completed payments, ensuring transparency and record-keeping. Key features like dynamic class listings (loaded via API) and a multi-step payment flow (subject selection → payment → receipt) streamline the user experience, reducing administrative overhead.
 
-### 4.1.2 Technology Stack
+#### 4.1.2 Technology Stack
 The app is built with vanilla HTML5, CSS3, and JavaScript for lightweight performance and broad compatibility. The UI uses responsive design principles (e.g., flexbox, viewport units) to adapt to mobile and desktop screens. For PDF generation, it integrates the jsPDF library, and session management relies on sessionStorage to persist user data (e.g., userId) post-login. No frontend frameworks are used, keeping the stack simple and maintainable.
 
-### 4.1.3 API Integration
+#### 4.1.3 API Integration
 The app interacts with a RESTful backend via fetch API calls to endpoints like:
 
 GET /classes/student/{studentId}: Loads enrolled classes.
@@ -227,15 +229,15 @@ POST /classes: Enrolls in a new class.
 POST /payments: Processes payments.
 Data is exchanged in JSON format, with error handling for failed requests (e.g., alerts for API errors). The API base URL (http://localhost:8080/api) is centralized for easy configuration.
 
-## 4.2 Admin (Tutor) App
+### 4.2 Admin (Tutor) App
 
-### 4.2.1 Purpose
+#### 4.2.1 Purpose
 The Admin App caters to tutors, providing tools to manage classes (add/edit schedules, update statuses) and monitor students. Tutors can view a filterable list of students (search by name, filter by payment status) and edit class details (day, time, status) via modal forms. The app emphasizes efficiency, with real-time updates to class tables and student lists fetched from the backend, ensuring tutors have up-to-date information for decision-making.
 
-### 4.2.2 Technology Stack
+#### 4.2.2 Technology Stack
 Like the Student App, it uses vanilla HTML/CSS/JS but includes additional UI components like modals (for editing classes) and interactive tables with sorting/filtering. Font Awesome icons enhance navigation (e.g., logout button), and CSS-driven status badges (e.g., "Paid," "Pending") improve data visibility. The app avoids external dependencies except for Font Awesome (for icons) and shares the same session management approach (sessionStorage).
 
-### 4.2.3 API Integration
+#### 4.2.3 API Integration
 The Admin App integrates with the backend through endpoints such as:
 
 GET /classes/tutor/{tutorId}: Fetches classes taught by the tutor.
