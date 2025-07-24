@@ -109,7 +109,38 @@ json
 <img width="1594" height="993" alt="image" src="https://github.com/user-attachments/assets/6fe99180-5888-49f2-a4cf-de423aa23220" />
 
 ### 3.2.4 Security Measure
-<img width="1100" height="553" alt="image" src="https://github.com/user-attachments/assets/e2572cc0-1888-428e-9fcf-4180af16db46" />
+package com.tuition.config;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.web.SecurityFilterChain;
+
+@Configuration
+public class SecurityConfig {
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+          .csrf(csrf -> csrf.disable())
+          .authorizeHttpRequests(auth -> auth
+                .requestMatchers(
+                    "/tms-login.html",
+                    "/tms-student-dashboard.html",
+                    "/tms-tutor-dashboard.html",
+                    "/api/auth/**", 
+                    "/api/classes/**",
+                    "/api/payments/**",
+                    "/css/**", 
+                    "/js/**",
+                    "/images/**"
+                ).permitAll()
+                .anyRequest().permitAll()
+          )
+          .formLogin(form -> form.disable())
+          .httpBasic(httpBasic -> httpBasic.disable());
+        return http.build();
+    }
+}
 
 Security measures implemented:
 
