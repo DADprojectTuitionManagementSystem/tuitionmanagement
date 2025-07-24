@@ -95,6 +95,10 @@ json
   "tutor_id": 2
 }
 
+### 3.2.3 Example Success
+<img width="1594" height="993" alt="image" src="https://github.com/user-attachments/assets/6fe99180-5888-49f2-a4cf-de423aa23220" />
+
+
 
 ## 5.0 Database Design
 ### 5.1 ERD diagram
