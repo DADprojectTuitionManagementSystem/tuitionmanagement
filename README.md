@@ -96,7 +96,6 @@ Example (POST `/api/classes`):
 }
 
 
-
 ## 5.0 Database Design
 
 ### 5.1 Entity Relationship Diagram
