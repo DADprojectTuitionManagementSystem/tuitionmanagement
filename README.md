@@ -267,6 +267,9 @@ The diagram helps visualize how users, classes and payments are related, ensurin
 
 ### 6.1 Use Case Diagram
 
+<img width="842" height="561" alt="image" src="https://github.com/user-attachments/assets/8d7e6f9c-cdb7-4487-832e-6fe16acf7a37" />
+
+
 ### 6.2 Data Validation Rules
 
 This section outlines the key validation rules implemented across both the **Student** and **Tutor** applications. These rules ensure user inputs are complete, correct, and compatible with backend requirements.
