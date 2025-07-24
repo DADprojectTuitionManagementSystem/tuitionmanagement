@@ -97,14 +97,19 @@ json
 
 
 ## 5.0 Database Design
+### 5.1 ERD diagram
 
-### 5.1 Entity Relationship Diagram
+### 5.2 Schema Justification
 
-### 5.2 Data Validation Rules
+## 6.0 Business Logic & Data Validation
+
+### 6.1 Use Case Diagram
+
+### 6.2 Data Validation Rules
 
 This section outlines the key validation rules implemented across both the **Student** and **Tutor** applications. These rules ensure user inputs are complete, correct, and compatible with backend requirements.
 
-#### 🔹 Student App Validation
+#### Student App Validation
 
 | Field              | Rule                                                                       | Type             | Message / Action                    |
 | ------------------ | -------------------------------------------------------------------------- | ---------------- | ----------------------------------- |
@@ -114,7 +119,7 @@ This section outlines the key validation rules implemented across both the **Stu
 | Payment Amount     | Calculated from subject (e.g., Math = RM120)                               | Internal Logic   | Prevent price tampering             |
 | Receipt Generation | PDF auto-generated after successful payment                                | System Generated | File: `receipt.pdf`                 |
 
-#### 🔹 Tutor App Validation
+#### Tutor App Validation
 
 | Field                   | Rule                                                 | Type             | Message / Action                       |
 | ----------------------- | ---------------------------------------------------- | ---------------- | -------------------------------------- |
@@ -124,7 +129,7 @@ This section outlines the key validation rules implemented across both the **Stu
 | Edit Class - Status     | Must be one of: Completed, Scheduled, Canceled       | Enumerated Field | Invalid status blocks update           |
 | Filter/Search Students  | Optional; no restrictions                            | Optional         | —                                      |
 
-#### 🔹 Backend API Validation (Spring Boot)
+#### Backend API Validation (Spring Boot)
 
 | Field                          | Rule                                       | HTTP Error if Violated   |
 | ------------------------------ | ------------------------------------------ | ------------------------ |
