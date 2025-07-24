@@ -99,7 +99,57 @@ The table below outlines the main API endpoints used in the tuition management s
 
 
 #### 3.2.2 Request Format
+##### 🟢 `POST /api/auth/login`
 
+**Headers:**  
+`Content-Type: application/json`
+
+**Body:**
+```json
+{
+  "username": "student1",
+  "password": "password123"
+}
+```
+
+---
+
+##### 🟢 `POST /api/classes/`
+
+**Headers:**  
+`Content-Type: application/json`  
+`Authorization: Bearer <token>`
+
+**Body:**
+```json
+{
+  "subject": "Mathematics",
+  "day": "Monday",
+  "start_time": "10:00",
+  "end_time": "11:30",
+  "tutor_id": 2
+}
+```
+
+---
+
+##### 🟢 `POST /api/payments/`
+
+**Headers:**  
+`Content-Type: application/json`  
+`Authorization: Bearer <token>`
+
+**Body:**
+```json
+{
+  "student_id": 5,
+  "amount": 150.00,
+  "method": "Online Transfer",
+  "status": "Paid"
+}
+```
+
+---
 
 ---
 ### 3.2.3 Example Success
