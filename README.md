@@ -42,7 +42,7 @@ A web based tuition class management system for tutors, students and payments
 ## 1.0 Introduction
 
   ### 1.1 Project Overview
-  Tuition Management System helps tutors and students manage tuition classes in organizing and managing tuition related data. The system provides key features such as class scheduling, schedule status, student enrollment, attendance tracking and payment management. Our team focuses on automating manual processes like registration, fee tracking, students attendance tracking and timetable coordination. The system aims to reduces administrative workload and human error. 
+  Tuition Management System helps tutors and students manage tuition classes in organizing and managing tuition related data. The system provides key features such as class scheduling, schedule status, student enrollment and payment management. Our team focuses on automating manual processes like registration, fee tracking, students attendance tracking and timetable coordination. The system aims to reduces administrative workload and human error. 
 
   Tutors can add easily create and update class sessions, update class time, class status and access list of students. Students can browse available classes, register new classes, display tuition fees and proceed to payment. 
 
